@@ -316,7 +316,7 @@ class GtpConnection:
 
     def timelimit(self, seconds):
         if not (1 <= seconds <=100):
-            self.respond("The argument of the function is an integer in the range 1 <= seconds <= 100.")
+            self.respond("The argument of the function should be an integer in the range 1 <= seconds <= 100.")
         return seconds
             
 
