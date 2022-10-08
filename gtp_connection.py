@@ -8,7 +8,9 @@ Parts of this code were originally based on the gtp module
 in the Deep-Go project by Isaac Henrion and Amos Storkey
 at the University of Edinburgh.
 """
+from queue import Empty
 import traceback
+from turtle import color
 import numpy as np
 import re
 from sys import stdin, stdout, stderr
@@ -318,7 +320,50 @@ class GtpConnection:
         if not (1 <= seconds <=100):
             self.respond("The argument of the function should be an integer in the range 1 <= seconds <= 100.")
         return seconds
-            
+
+    def isWinner(self, color):
+        # current_player = self.board.current_player
+        opp_color = opponent(color)
+        legal_moves = GoBoardUtil.generate_legal_moves(self.board, opp_color)
+        if legal_moves == []:
+            return True
+        else:
+            return False
+
+    # From assignment 1
+    def end_of_game(self) -> bool:
+        color: GO_COLOR = self.board.current_player
+        moves: np.ndarray[GO_POINT] = self.board.get_empty_points()
+        # TODO use generator instead.
+        legal_moves: List[GO_POINT] = []
+        # TODO use generator instead.
+        for move in moves:
+            if self.board.is_legal(move, color):
+                legal_moves.append(move)
+        
+        if len(legal_moves) == 0:
+            return True   
+        else:
+           False
+        '''return self.last_move == PASS \
+           and self.last2_move == PASS''' 
+    # Taken from Lecture 8 python files
+    def winner(self):
+        if self.isWinner(BLACK):
+            return BLACK
+        if self.isWinner(WHITE):
+            return WHITE
+        return EMPTY
+
+    # Taken from Lecture 8 python files
+    def staticallyEvaluateForToPlay(self):
+        winColor = self.winner()
+        # confused about whether we switch opp with current player
+        if winColor == self.board.current_player:
+            return True
+        assert winColor == opponent(self.board.current_player)
+        return False
+        
 
     def play_cmd(self, args: List[str]) -> None:
         """

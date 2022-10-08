@@ -260,3 +260,5 @@ class GoBoard(object):
         """
         board_moves: List[GO_POINT] = []
         return board_moves
+
+    
