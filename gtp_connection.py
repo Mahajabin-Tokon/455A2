@@ -15,7 +15,6 @@ import numpy as np
 import re
 from sys import stdin, stdout, stderr
 from typing import Any, Callable, Dict, List, Tuple
-import time
 
 from board_base import (
     is_black_white,
@@ -322,12 +321,14 @@ class GtpConnection:
             self.respond("The argument of the function should be an integer in the range 1 <= seconds <= 100.")
         return seconds
 
-
-    def isLoser(self, color):
-        legal_moves = GoBoardUtil.generate_legal_moves(self.board, color)
-        if len(legal_moves) == 0:
+    def isWinner(self, color):
+        # current_player = self.board.current_player
+        opp_color = opponent(color)
+        legal_moves = GoBoardUtil.generate_legal_moves(self.board, opp_color)
+        if legal_moves == []:
             return True
-        return False
+        else:
+            return False
 
     # From assignment 1
     def end_of_game(self) -> bool:
@@ -346,35 +347,22 @@ class GtpConnection:
            False
         '''return self.last_move == PASS \
            and self.last2_move == PASS''' 
-
     # Taken from Lecture 8 python files
-    """ def winner(self):
-        # fix logic along with isWinner logic
+    def winner(self):
         if self.isWinner(BLACK):
             return BLACK
         if self.isWinner(WHITE):
-            return WHITE
-        return EMPTY """
-    def loser(self):
-    # fix logic along with isWinner logic
-        if self.isLoser(BLACK):
-            return BLACK
-        if self.isLoser(WHITE):
             return WHITE
         return EMPTY
 
     # Taken from Lecture 8 python files
     def staticallyEvaluateForToPlay(self):
-        #winColor = self.winner()
-        winColor = self.loser()
+        winColor = self.winner()
         # confused about whether we switch opp with current player
-        # update the logic 
         if winColor == self.board.current_player:
-            #return True
-            return False
-        assert winColor != opponent(self.board.current_player)
-        #return False
-        return True
+            return True
+        assert winColor == opponent(self.board.current_player)
+        return False
         
 
     def play_cmd(self, args: List[str]) -> None:
@@ -432,47 +420,6 @@ class GtpConnection:
     def solve_cmd(self, args: List[str]) -> None:
         # remove this respond and implement this method
         self.respond('Implement This for Assignment 2')
-    
-    def minimaxBooleanOR(self):
-        assert self.board.current_player == BLACK
-        if self.endOfGame():
-            return not self.isLoser(BLACK)
-        legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
-        board_copy: GoBoard = self.board.copy()
-        for m in legal_moves:
-            can_play_move = board_copy.play_move(m, self.board.current_player)
-            if can_play_move:
-                isWin = minimaxBooleanAND(self)
-            #state.undoMove()
-                if isWin:
-                    return True
-        return False
-
-    def minimaxBooleanAND(self):
-        assert self.board.current_player == WHITE
-        if self.endOfGame():
-            return not self.isLoser(BLACK)
-        legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
-        board_copy: GoBoard = self.board.copy()
-        for m in legal_moves:
-            can_play_move = board_copy.play_move(m, self.board.current_player)
-            if can_play_move:
-                isLoss = not minimaxBooleanOR(state)
-            #state.undoMove()
-                if isLoss:
-                    return False
-        return True
-
-    def solveForBlack(self): 
-        # Need to check the time used here
-        win = False
-        start = time.process_time()
-        if self.board.current_player == BLACK:
-            win = minimaxBooleanOR()
-        else:
-            win = minimaxBooleanAND()
-        timeUsed = time.process_time() - start
-        return win, timeUsed
 
     """
     ==========================================================================
