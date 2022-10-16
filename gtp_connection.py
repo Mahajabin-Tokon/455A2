@@ -420,6 +420,7 @@ class GtpConnection:
             
     def solve_cmd(self, args: List[str]) -> None:
         # remove this respond and implement this method
+        # Get current player and current move
         self.respond('Implement This for Assignment 2')
 
     """
