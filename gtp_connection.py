@@ -432,7 +432,14 @@ class GtpConnection:
     def solve_cmd(self, args: List[str]) -> None:
         curr_player = self.board.current_player()
         # who_was_returned = alphaBeta()
-        self.respond(who_was_returned)
+
+        our_time = self.timelimit()
+        if our_time > 0:
+            while t > 0:
+                t -= 1
+                time.sleep(1)
+        else:
+            self.respond("Please use the timelimit method to provide a timelimit")
     
     def minimaxBooleanOR(self):
         assert self.board.current_player == BLACK
