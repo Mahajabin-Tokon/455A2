@@ -347,6 +347,7 @@ class GtpConnection:
            False
         '''return self.last_move == PASS \
            and self.last2_move == PASS''' 
+           
     # Taken from Lecture 8 python files
     def winner(self):
         if self.isWinner(BLACK):
