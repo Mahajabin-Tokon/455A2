@@ -430,8 +430,9 @@ class GtpConnection:
             
             
     def solve_cmd(self, args: List[str]) -> None:
-        # remove this respond and implement this method
-        self.respond('Implement This for Assignment 2')
+        curr_player = self.board.current_player()
+        # who_was_returned = alphaBeta()
+        self.respond(who_was_returned)
     
     def minimaxBooleanOR(self):
         assert self.board.current_player == BLACK
