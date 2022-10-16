@@ -322,12 +322,18 @@ class GtpConnection:
             self.respond("The argument of the function should be an integer in the range 1 <= seconds <= 100.")
         return seconds
 
+    def isWinner(self, color):
+        # current_player = self.board.current_player
+        legal_moves = GoBoardUtil.generate_legal_moves(self.board, color)
+        if len(legal_moves) == 0:
+            return False
+        return true 
 
-    def isLoser(self, color):
+    '''def isLoser(self, color):
         legal_moves = GoBoardUtil.generate_legal_moves(self.board, color)
         if len(legal_moves) == 0:
             return True
-        return False
+        return False'''
 
     # From assignment 1
     def end_of_game(self) -> bool:
@@ -348,23 +354,33 @@ class GtpConnection:
            and self.last2_move == PASS''' 
 
     # Taken from Lecture 8 python files
-    """ def winner(self):
+    def winner(self):
         # fix logic along with isWinner logic
         if self.isWinner(BLACK):
             return BLACK
         if self.isWinner(WHITE):
             return WHITE
-        return EMPTY """
-    def loser(self):
+        return EMPTY 
+
+   ''' def loser(self):
         # fix logic along with isWinner logic
         if self.isLoser(BLACK):
             return BLACK
         if self.isLoser(WHITE):
             return WHITE
-        return EMPTY
+        return EMPTY'''
+        
+    def staticallyEvaluateForToPlay(self):
+        winColor = self.winner()
+        #if (winColor == EMPTY) and (self.drawWinner != EMPTY):
+            #winColor = self.drawWinner
+        if winColor == self.board.current_player:
+            return True
+        assert winColor == opponent(self.toPlay)
+        return False
 
     # Taken from Lecture 8 python files
-    def staticallyEvaluateForToPlay(self):
+    """def staticallyEvaluateForToPlay(self):
         #winColor = self.winner()
         winColor = self.loser()
         # confused about whether we switch opp with current player
@@ -374,7 +390,7 @@ class GtpConnection:
             return False
         assert winColor != opponent(self.board.current_player)
         #return False
-        return True
+        return True"""
         
 
     def play_cmd(self, args: List[str]) -> None:
