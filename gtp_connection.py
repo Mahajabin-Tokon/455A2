@@ -47,6 +47,7 @@ class GtpConnection:
         self._debug_mode: bool = debug_mode
         self.go_engine = go_engine
         self.board: GoBoard = board
+        self.time_limit: int = 100
         self.commands: Dict[str, Callable[[List[str]], None]] = {
             "protocol_version": self.protocol_version_cmd,
             "quit": self.quit_cmd,
@@ -64,7 +65,7 @@ class GtpConnection:
             "gogui-rules_legal_moves": self.gogui_rules_legal_moves_cmd,
             "gogui-rules_final_result": self.gogui_rules_final_result_cmd,
             "solve": self.solve_cmd,
-            "timelimit": self.timelimit
+            "timelimit": self.timelimit_cmd
         }
 
         # argmap is used for argument checking
@@ -77,6 +78,7 @@ class GtpConnection:
             "genmove": (1, "Usage: genmove {w,b}"),
             "play": (2, "Usage: play {b,w} MOVE"),
             "legal_moves": (1, "Usage: legal_moves {w,b}"),
+            "timelimit": (1, "Usage: timelimit INT"),
         }
 
     def write(self, data: str) -> None:
@@ -317,17 +319,12 @@ class GtpConnection:
         else:
             self.respond('')
 
-    def timelimit(self, seconds):
-        if not (1 <= seconds <=100):
-            self.respond("The argument of the function should be an integer in the range 1 <= seconds <= 100.")
-        return seconds
-
     def isWinner(self, color):
         # current_player = self.board.current_player
         legal_moves = GoBoardUtil.generate_legal_moves(self.board, color)
         if len(legal_moves) == 0:
             return False
-        return true 
+        return True 
 
     '''def isLoser(self, color):
         legal_moves = GoBoardUtil.generate_legal_moves(self.board, color)
@@ -436,34 +433,49 @@ class GtpConnection:
         else:
             self.respond("Illegal move: {}".format(move_as_string))
 
-                  
-    def solve_cmd(self, args: List[str]) -> None:
-        # curr_player = self.board.current_player()
-        winColor = self.board.current_player
+
+    def timelimit_cmd(self, args: List[int]):
+        self.time_limit = int(args[0])
+        self.respond(self.time_limit)
+        
+        if (self.time_limit <= 1) or (self.time_limit >= 100):
+            self.respond("The argument of the function should be an integer between 1 and 100")
+        # return int(seconds) 
+
+    def solve_helper (self):
+        curr_player = self.board.current_player
+
+        winColor = ""
+
+        if curr_player == 1:
+            winColor = "b"
+        elif curr_player == 2:
+            winColor = "w"
+
         wins = self.negamaxBooleanSolveAll()
+        
         winner = self.solveForColor(self.board.current_player)
         if winner:
-            self.respond(winColor)
-            self.respond(wins)
+            win_moves = " ".join(sorted(wins))
+            self.respond(winColor+"|"+win_moves)
+            
         else:
             self.respond("Someting")
             self.respond(opponent(winColor))
-            # winColor = self.board.current_player
-        # if winner == self.board.current_player:
-        #     self.respond(winColor)
-        #     self.respond(wins)
-        # else:     
-        #     self.respond(winColor)
+
+    def solve_cmd(self, args: List[str]) -> None:
         
-        # our_time = self.timelimit()
-        # if our_time > 0:
-        #     while our_time > 0:
-        #         our_time -= 1 
-        #         time.sleep(1)
+        our_time = self.time_limit
+        
+        while our_time > 0:
+            our_time -= 1 
+            time.sleep(1)
+        
+        self.solve_helper()
 
-        # else:
-        #     self.respond("Please use the timelimit method to provide a timelimit")
+        self.respond("Unknown")
 
+        
     def negamaxBoolean(self, board: GoBoard):
         if self.endOfGame():
             return self.staticallyEvaluateForToPlay()
@@ -485,12 +497,15 @@ class GtpConnection:
         legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
         board_copy: GoBoard = self.board.copy()
         for m in legal_moves:
+            
             can_play_move = board_copy.play_move(m, self.board.current_player)
             if can_play_move:
                 success = not self.negamaxBoolean(board_copy)
             #  board_copy.undoMove()
             if success:
-                wins.append(m)
+                coords: Tuple[int, int] = point_to_coord(m, self.board.size)
+                wins.append(format_point(coords))
+                # wins.append(m)
         return wins
 
     def solveForColor(self, color): 
