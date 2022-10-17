@@ -16,6 +16,7 @@ import re
 from sys import stdin, stdout, stderr
 from typing import Any, Callable, Dict, List, Tuple
 import time
+import signal
 
 from board_base import (
     is_black_white,
@@ -462,18 +463,33 @@ class GtpConnection:
         else:
             self.respond("Someting")
             self.respond(opponent(winColor))
+    
+    
 
     def solve_cmd(self, args: List[str]) -> None:
-        
         our_time = self.time_limit
+        def signal_handler(signum, frame):
+            raise Exception
         
-        while our_time > 0:
-            our_time -= 1 
-            time.sleep(1)
-        
-        self.solve_helper()
+        signal.signal(signal.SIGALRM, signal_handler)
+        signal.alarm(our_time)  
 
-        self.respond("Unknown")
+        try:
+            self.solve_helper()
+        except Exception:
+            self.respond("Timed out!")
+        finally:
+            signal.alarm(0)
+        
+        # our_time = self.time_limit
+        
+        # while our_time > 0:
+        #     our_time -= 1 
+        #     time.sleep(1)
+        
+        # self.solve_helper()
+
+        # self.respond("Unknown")
 
         
     def negamaxBoolean(self, board: GoBoard):
