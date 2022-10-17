@@ -439,18 +439,21 @@ class GtpConnection:
                   
     def solve_cmd(self, args: List[str]) -> None:
         # curr_player = self.board.current_player()
-        winColor = ""
+        winColor = self.board.current_player
         wins = self.negamaxBooleanSolveAll()
         winner = self.solveForColor(self.board.current_player)
-        if winner == 1:
-            winColor = "b"
-        elif winner == 2:
-            winColor = "w"
-        if winner == self.board.current_player:
+        if winner:
             self.respond(winColor)
             self.respond(wins)
-        else:     
-            self.respond(winColor)
+        else:
+            self.respond("Someting")
+            self.respond(opponent(winColor))
+            # winColor = self.board.current_player
+        # if winner == self.board.current_player:
+        #     self.respond(winColor)
+        #     self.respond(wins)
+        # else:     
+        #     self.respond(winColor)
         
         # our_time = self.timelimit()
         # if our_time > 0:
