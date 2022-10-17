@@ -368,7 +368,7 @@ class GtpConnection:
             #winColor = self.drawWinner
         if winColor == self.board.current_player:
             return True
-        assert winColor == opponent(self.board.current_player)
+        assert winColor == opponent(self.toPlay)
         return False
 
     # Taken from Lecture 8 python files
@@ -435,39 +435,40 @@ class GtpConnection:
             self.respond(move_as_string)
         else:
             self.respond("Illegal move: {}".format(move_as_string))
+            
+    def solveForColor(self, color): 
+        winForToPlay = self.negamaxBoolean()
+        winForColor = winForToPlay == (color == self.board.current_player)
+        return winForColor 
 
+    def solveForWinLoss(self):
+        winBlack = self.solveForColor(self.board, self.board.current_player)
+        if winBlack:
+            return BLACK
+        else:
+            winner = EMPTY
+            winWhite = self.solveForColor(self.board, WHITE)
+            if winWhite:
+                winner = WHITE
+            return winner
                   
     def solve_cmd(self, args: List[str]) -> None:
-        # curr_player = self.board.current_player()
-        winColor = ""
-        wins = self.negamaxBooleanSolveAll()
-        winner = self.solveForColor(self.board.current_player)
-        if winner == 1:
-            winColor = "b"
-        elif winner == 2:
-            winColor = "w"
-        if winner == self.board.current_player:
-            self.respond(winColor)
-            self.respond(wins)
-        else:     
-            self.respond(winColor)
-        
-        # our_time = self.timelimit()
-        # if our_time > 0:
-        #     while our_time > 0:
-        #         our_time -= 1 
-        #         time.sleep(1)
+        curr_player = self.board.current_player()
+        our_time = self.timelimit()
+        if our_time > 0:
+            while our_time > 0:
+                our_time -= 1 
+                time.sleep(1)
+        else:
+            self.respond("Please use the timelimit method to provide a timelimit")
 
-        # else:
-        #     self.respond("Please use the timelimit method to provide a timelimit")
-
-    def negamaxBoolean(self, board: GoBoard):
+    def negamaxBoolean(self):
         if self.endOfGame():
             return self.staticallyEvaluateForToPlay()
-        legal_moves = GoBoardUtil.generate_legal_moves(board, board.current_player)
-        board_copy: GoBoard = board.copy()
+        legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
+        board_copy: GoBoard = self.board.copy()
         for m in legal_moves:
-            can_play_move = board_copy.play_move(m, board.current_player)
+            can_play_move = board_copy.play_move(m, self.board.current_player)
             if can_play_move:
                 success = not self.negamaxBoolean(board_copy)
             # board_copy.undoMove()
@@ -490,19 +491,7 @@ class GtpConnection:
                 wins.append(m)
         return wins
 
-    def solveForColor(self, color): 
-        winForToPlay = self.negamaxBoolean(self.board)
-        winForColor = winForToPlay == (color == self.board.current_player)
-        return winForColor 
-
-    # def solveForWinLoss(self):
-    #     winner = self.solveForColor(self.board, self.board.current_player)
-    #     if winner:
-    #         return self.board.current_player
-    #     else:
-    #         # winWhite = self.solveForColor(self.board, WHITE)
-    #         # if winWhite: 
-    #         return opponent(self.board.current_player)
+    
     
     def minimaxBooleanOR(self):
         assert self.board.current_player == BLACK

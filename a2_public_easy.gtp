@@ -9,7 +9,8 @@ play b c2
 play w d1
 play b d3
 10 solve
-#?[w d4|w c4]
+#?[
+ d4|w c4]
 
 boardsize 4
 clear_board
