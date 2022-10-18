@@ -329,12 +329,6 @@ class GtpConnection:
             return False
         return True 
 
-    '''def isLoser(self, color):
-        legal_moves = GoBoardUtil.generate_legal_moves(self.board, color)
-        if len(legal_moves) == 0:
-            return True
-        return False'''
-
     # From assignment 1
     def endOfGame(self) -> bool:
         color: GO_COLOR = self.board.current_player
@@ -369,21 +363,7 @@ class GtpConnection:
         if winColor == self.board.current_player:
             return True
         assert winColor == opponent(self.board.current_player)
-        return False
-
-    # Taken from Lecture 8 python files
-    """def staticallyEvaluateForToPlay(self):
-        #winColor = self.winner()
-        winColor = self.loser()
-        # confused about whether we switch opp with current player
-        # update the logic 
-        if winColor == self.board.current_player:
-            #return True
-            return False
-        assert winColor != opponent(self.board.current_player)
-        #return False
-        return True"""
-        
+        return False        
 
     def play_cmd(self, args: List[str]) -> None:
         """
@@ -436,7 +416,7 @@ class GtpConnection:
     #     else:
     #         self.respond("Illegal move: {}".format(move_as_string))
 
-    def genmove_cmd_helper(self, color):
+    '''def genmove_cmd_helper(self, color):
         curr_player = self.board.current_player
         winColor = ""
         oppColor = ""
@@ -447,7 +427,8 @@ class GtpConnection:
             winColor = "w"
             oppColor = "b"
         wins = self.negamaxBooleanSolveAll()
-        winner = self.solveForColor(self.board.current_player)
+        winner = self.solveForColor(color)
+        return winner,wins
     
         if winner:
             our_move = random.choice(wins)
@@ -467,16 +448,19 @@ class GtpConnection:
             moves = " ".join(coords.lower())
             win_point = coord_to_point(coords[0], coords[1], self.board.size)
             self.board.play_move(win_point, color)
-            self.respond(moves)
+            self.respond(moves)'''
         
-    def genmove_cmd_helper_two(self, color):
+    def genmove_cmd_helper(self, color):
         our_time = self.time_limit
         def signal_handler(signum, frame):
             raise Exception
         signal.signal(signal.SIGALRM, signal_handler)
         signal.alarm(our_time)  
         try:
-            self.genmove_cmd_helper(color)
+            #self.genmove_cmd_helper(color)
+            wins = self.negamaxBooleanSolveAll()
+            winner = self.solveForColor(color)
+            return winner,wins
         except Exception:
             return None
         finally:
@@ -496,7 +480,7 @@ class GtpConnection:
         move_coord = point_to_coord(move, self.board.size)
         move_as_string = format_point(move_coord)
 
-        the_winner = self.genmove_cmd_helper_two(color)
+        is_winner, wins = self.genmove_cmd_helper(color)
         # if self.board.is_legal(move, color) and (the_winner == board_color):
         #     wins = self.negamaxBooleanSolveAll()
         #     win_move = random.choice(wins)
@@ -512,6 +496,26 @@ class GtpConnection:
 
         # else:
         #     self.respond("Illegal move: {}".format(move_as_string))
+
+        if is_winner:
+            our_move = random.choice(wins)
+            self.respond(our_move)
+            win_moves = "".join(our_move.lower())
+            self.respond(win_moves)
+            win_point = coord_to_point(our_move[0], our_move[1], self.board.size)
+            self.respond(win_point)
+            self.board.play_move(win_point, color)
+            self.respond(win_moves.lower())   
+        else:
+            legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
+            if len(legal_moves) == 0:
+                self.respond("resign")
+            coords: Tuple[int, int] = point_to_coord(random.choice(legal_moves), self.board.size)
+            win_moves.append(format_point(coords))  
+            moves = " ".join(coords.lower())
+            win_point = coord_to_point(coords[0], coords[1], self.board.size)
+            self.board.play_move(win_point, color)
+            self.respond(moves)
 
 
     def timelimit_cmd(self, args: List[int]):
@@ -580,8 +584,8 @@ class GtpConnection:
         for m in legal_moves:
             
             can_play_move = board_copy.play_move(m, self.board.current_player)
-            # if can_play_move:
-            success = not self.negamaxBoolean(board_copy)
+            if can_play_move:
+                success = not self.negamaxBoolean(board_copy)
             #  board_copy.undoMove()
             if success:
                 coords: Tuple[int, int] = point_to_coord(m, self.board.size)
@@ -593,57 +597,7 @@ class GtpConnection:
         winForToPlay = self.negamaxBoolean(self.board)
         winForColor = winForToPlay == (color == self.board.current_player)
         return winForColor 
-
-    # def solveForWinLoss(self):
-    #     winner = self.solveForColor(self.board, self.board.current_player)
-    #     if winner:
-    #         return self.board.current_player
-    #     else:
-    #         # winWhite = self.solveForColor(self.board, WHITE)
-    #         # if winWhite: 
-    #         return opponent(self.board.current_player)
     
-    def minimaxBooleanOR(self):
-        assert self.board.current_player == BLACK
-        if self.endOfGame():
-            return not self.isLoser(BLACK)
-        legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
-        board_copy: GoBoard = self.board.copy()
-        for m in legal_moves:
-            can_play_move = board_copy.play_move(m, self.board.current_player)
-            if can_play_move:
-                isWin = minimaxBooleanAND(self)
-            #state.undoMove()
-                if isWin:
-                    return True
-        return False
-
-    def minimaxBooleanAND(self):
-        assert self.board.current_player == WHITE
-        if self.endOfGame():
-            return not self.isLoser(BLACK)
-        legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
-        board_copy: GoBoard = self.board.copy()
-        for m in legal_moves:
-            can_play_move = board_copy.play_move(m, self.board.current_player)
-            if can_play_move:
-                isLoss = not minimaxBooleanOR(state)
-            #state.undoMove()
-                if isLoss:
-                    return False
-        return True
-
-    def solveForBlack(self): 
-        # Need to check the time used here
-        win = False
-        start = time.process_time()
-        if self.board.current_player == BLACK:
-            win = minimaxBooleanOR()
-        else:
-            win = minimaxBooleanAND()
-        timeUsed = time.process_time() - start
-        return win, timeUsed
-
     """
     ==========================================================================
     Assignment 2 - game-specific commands end here
