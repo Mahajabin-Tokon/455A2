@@ -463,6 +463,7 @@ class GtpConnection:
             self.respond(oppColor) 
             
     def solve_cmd(self, args: List[str]) -> None:
+        # self.solve_helper()
         our_time = self.time_limit
         def signal_handler(signum, frame):
             raise Exception
@@ -479,13 +480,13 @@ class GtpConnection:
         if self.endOfGame():
             return self.staticallyEvaluateForToPlay()
         legal_moves = GoBoardUtil.generate_legal_moves(board, board.current_player)
-        board_copy: GoBoard = board.copy()
+        # board_copy: GoBoard = board.copy()
         for m in legal_moves:
-            can_play_move = board_copy.play_move(m, board.current_player)
+            can_play_move = board.play_move(m, board.current_player)
             if can_play_move:
-                success = not self.negamaxBoolean(board_copy)
-            board_copy.board[m] = EMPTY
-            board.current_player = opponent(board.current_player)
+                success = not self.negamaxBoolean(board)
+            board.board[m] = EMPTY
+            self.board.current_player = opponent(self.board.current_player)
             if success:
                 return True
         return False
@@ -495,14 +496,14 @@ class GtpConnection:
             return self.staticallyEvaluateForToPlay()
         wins = []
         legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
-        board_copy: GoBoard = self.board.copy()
+        # board_copy: GoBoard = self.board.copy()
         for m in legal_moves:
             
-            can_play_move = board_copy.play_move(m, self.board.current_player)
+            can_play_move = self.board.play_move(m, self.board.current_player)
             if can_play_move:
-                success = not self.negamaxBoolean(board_copy)
-            # board_copy.board[m] = EMPTY
-            
+                success = not self.negamaxBoolean(self.board)
+                self.board.board[m] = EMPTY
+                self.board.current_player = opponent(self.board.current_player)
             if success:
                 coords: Tuple[int, int] = point_to_coord(m, self.board.size)
                 wins.append(format_point(coords))
