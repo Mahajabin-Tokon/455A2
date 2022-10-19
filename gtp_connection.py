@@ -344,7 +344,7 @@ class GtpConnection:
         winColor = self.winner()
         if winColor == self.board.current_player:
             return True
-        assert winColor == opponent(self.board.current_player)
+        # assert winColor == opponent(self.board.current_player)
         return False        
 
     def play_cmd(self, args: List[str]) -> None:
@@ -501,7 +501,8 @@ class GtpConnection:
             can_play_move = board_copy.play_move(m, self.board.current_player)
             if can_play_move:
                 success = not self.negamaxBoolean(board_copy)
-            #  board_copy.undoMove()
+            # board_copy.board[m] = EMPTY
+            
             if success:
                 coords: Tuple[int, int] = point_to_coord(m, self.board.size)
                 wins.append(format_point(coords))
@@ -545,6 +546,7 @@ def move_to_coord(point_str: str, board_size: int) -> Tuple[int, int]:
     
     """
     s = point_str.lower()
+
     col_c = s[0]
     col = ord(col_c) - ord("a")
     if col_c < "i":

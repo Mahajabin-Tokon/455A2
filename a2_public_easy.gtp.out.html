@@ -23,7 +23,7 @@ span.test { font-weight:bold; }
 </td></tr>
 </table>
 <table width="100%" bgcolor="#e0e0e0">
-<tr><th align="left">Date:</th><td>October 17, 2022 at 8:26:04 PM MDT</td></tr>
+<tr><th align="left">Date:</th><td>October 18, 2022 at 6:04:38 PM MDT</td></tr>
 <tr><th align="left">Host:</th><td>Tokons-MacBook-Pro.local</td></tr>
 <tr><th align="left" valign="top">Command:</th>
 <td valign="top"><tt>python3 Go0.py</tt></td></tr>
@@ -48,7 +48,7 @@ cputime
 </span>= 
 
 <span class="command">timelimit 10
-</span>= 10
+</span>= 
 
 <span class="command">play b a4
 </span>= 
@@ -73,7 +73,7 @@ cputime
 
 <span class="test"><a name="10">10 solve
 </a>#?[w d4|w c4]
-</span><span class="fail">= b
+= w c4
 
 </span>
 <span class="command">boardsize 4
@@ -83,7 +83,7 @@ cputime
 </span>= 
 
 <span class="command">timelimit 70
-</span>= 70
+</span>= 
 
 <span class="command">play b a4
 </span>= 
@@ -99,11 +99,11 @@ cputime
 
 <span class="test"><a name="20">20 solve
 </a>#?[b a1|b b1|b b3]
-</span><span class="fail">= D4
+</span><span class="fail">= [unknown]
 
 </span>
 <span class="command">boardsize 4
-</span>= b|d4
+</span>= 
 
 <span class="command">clear_board
 </span>= 
@@ -112,7 +112,7 @@ cputime
 </span>= 
 
 <span class="command">play b a4
-</span>= 50
+</span>= 
 
 <span class="command">play w a2
 </span>= 
@@ -128,14 +128,14 @@ cputime
 
 <span class="test"><a name="30">30 solve
 </a>#?[w b1|w b2]
-</span><span class="fail">= 
+</span><span class="fail">= b
 
 </span>
 <span class="command">boardsize 4
-</span>= C4 D4
+</span>= 
 
 <span class="command">clear_board
-</span>= w|c4 d4
+</span>= 
 
 <span class="command">timelimit 5
 </span>= 
@@ -144,7 +144,7 @@ cputime
 </span>= 
 
 <span class="command">play w b4
-</span>= 5
+</span>= 
 
 <span class="command">play b a3
 </span>= 
@@ -172,14 +172,14 @@ cputime
 
 <span class="test"><a name="40">40 solve
 </a>#?[w]
-</span><span class="fail">= 
+= w
 
 </span>
 <span class="command">boardsize 4
 </span>= 
 
 <span class="command">clear_board
-</span>= w
+</span>= 
 
 <span class="command">timelimit 1
 </span>= 
@@ -188,10 +188,10 @@ cputime
 </span>= 
 
 <span class="command">play w b4
-</span>= 1
+</span>= 
 
 <span class="command">play b a3
-</span>= The argument of the function should be an integer between 1 and 100
+</span>= 
 
 <span class="command">play w d2
 </span>= 
@@ -228,19 +228,19 @@ cputime
 
 <span class="test"><a name="50">50 genmove b
 </a>#?[resign]
-</span><span class="fail">= 
+= resign
 
 </span></pre>
 <hr style="margin:1em" size="1">
 <pre style="margin:1em">
 </span>cputime
-= 
+? Unknown command
 
 quit
 = 
 
 </pre>
 <hr style="margin-bottom:0" size="1">
-<p style="margin-top:1; margin-right:5" align="right"><i><small>Generated on 10/17/22, 8:26 PM by gogui-regress 1.5.1 (<a href="http://gogui.sf.net">http://gogui.sf.net</a>)</small></i></p>
+<p style="margin-top:1; margin-right:5" align="right"><i><small>Generated on 10/18/22, 6:06 PM by gogui-regress 1.5.1 (<a href="http://gogui.sf.net">http://gogui.sf.net</a>)</small></i></p>
 </body>
 </html>
